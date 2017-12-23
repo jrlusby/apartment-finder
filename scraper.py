@@ -56,7 +56,7 @@ def scrape_area(area):
         filters=settings.FILTERS)
 
     results = []
-    gen = cl_h.get_results(sort_by='newest', geotagged=True, limit=3)
+    gen = cl_h.get_results(sort_by='newest', geotagged=True, limit=20)
     while True:
         try:
             result = next(gen)
