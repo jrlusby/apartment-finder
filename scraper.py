@@ -53,9 +53,7 @@ def scrape_area(area):
         site=settings.CRAIGSLIST_SITE,
         area=area,
         category=settings.CRAIGSLIST_HOUSING_SECTION,
-        filters={
-            'max_price': settings.MAX_PRICE,
-            "min_price": settings.MIN_PRICE})
+        filters=settings.FILTERS)
 
     results = []
     gen = cl_h.get_results(sort_by='newest', geotagged=True, limit=3)
