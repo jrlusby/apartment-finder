@@ -1,13 +1,13 @@
 import os
 from datetime import datetime
 
-DEV_MODE = True
+DEV_MODE = False
 
 ## Price
 
 FILTERS = {
-    'min_price': 1000,
-    'max_price': 2200,
+    'min_price': 1500,
+    'max_price': 2700,
     'min_bedrooms': 1,
     'cats_ok': 1,
     'min_bathrooms': 1,
@@ -17,7 +17,7 @@ FILTERS = {
 MIN_PRICE = 1500
 
 # The maximum rent you want to pay per month.
-MAX_PRICE = 2000
+MAX_PRICE = 2700
 
 ## Location preferences
 
@@ -29,8 +29,8 @@ CRAIGSLIST_SITE = 'sfbay'
 # What Craigslist subdirectories to search on.
 # For instance, https://sfbay.craigslist.org/eby/ is the East Bay, and https://sfbay.craigslist.org/sfc/ is San Francisco.
 # You only need the last three letters of the URLs.
-# AREAS = ["eby", "sfc", "sby", "nby"]
-AREAS = ["sfc"]
+AREAS = ["eby", "sfc", "sby", "nby"]
+# AREAS = ["sfc"]
 
 # A list of neighborhoods and coordinates that you want to look for apartments in.  Any listing that has coordinates
 # attached will be checked to see which area it is in.  If there's a match, it will be annotated with the area
@@ -128,8 +128,8 @@ PAIGE_COMMUTE = {
 }
 
 COMMUTERS = [JANE_COMMUTE, PAIGE_COMMUTE]
-# COMMUTE_MODES = ['transit', 'bicycling', 'walking', 'driving']
-COMMUTE_MODES = ['transit']
+COMMUTE_MODES = ['transit', 'bicycling', 'walking', 'driving']
+# COMMUTE_MODES = ['transit']
 
 ## Search type preferences
 
