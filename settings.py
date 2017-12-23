@@ -103,6 +103,12 @@ JANE_COMMUTE = {
     "max_fare": 15,
     "max_transit_steps": 1,
     "max_total": 90,
+    "mode_maxes": {
+        "DRIVING": 0,
+        "BICYCLING": 30,
+        "TRANSIT": 90,
+        "WALKING": 30,
+    }
 }
 
 PAIGE_COMMUTE = {
@@ -113,6 +119,12 @@ PAIGE_COMMUTE = {
     "max_fare": 15,
     "max_transit_steps": 1,
     "max_total": 90,
+    "mode_maxes": {
+        "DRIVING": 20,
+        "BICYCLING": 30,
+        "TRANSIT": 90,
+        "WALKING": 30,
+    }
 }
 
 COMMUTERS = [JANE_COMMUTE, PAIGE_COMMUTE]

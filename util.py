@@ -141,7 +141,11 @@ def process_google(source_addr):
                 # print travel_time
                 # print step_breakdown
                 # print fare, total, extra, steps
-                if (extra <= commute["max_extra"] and
+                commute_ok = True
+                for mode, max_t in commute["mode_maxes"].iteritems():
+                    if mode in travel_time and travel_time[mode] > max_t:
+                        commute_ok = False
+                if (commute_ok and extra <= commute["max_extra"] and
                         fare <= commute["max_fare"] and
                         steps <= commute["max_transit_steps"] and
                         total <= commute["max_total"]):
