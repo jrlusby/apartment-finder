@@ -3,6 +3,14 @@ from datetime import datetime
 
 DEV_MODE = True
 
+if DEV_MODE:
+    LIMIT = 5
+    ALTERNATES=False
+else:
+    LIMIT = 20
+    ALTERNATES=True
+
+
 ## Price
 
 FILTERS = {
@@ -29,8 +37,10 @@ CRAIGSLIST_SITE = 'sfbay'
 # What Craigslist subdirectories to search on.
 # For instance, https://sfbay.craigslist.org/eby/ is the East Bay, and https://sfbay.craigslist.org/sfc/ is San Francisco.
 # You only need the last three letters of the URLs.
-AREAS = ["eby", "sfc", "sby", "nby"]
-# AREAS = ["sfc"]
+if DEV_MODE:
+    AREAS = ["sfc"]
+else:
+    AREAS = ["eby", "sfc", "sby", "nby"]
 
 # A list of neighborhoods and coordinates that you want to look for apartments in.  Any listing that has coordinates
 # attached will be checked to see which area it is in.  If there's a match, it will be annotated with the area
@@ -99,15 +109,15 @@ JANE_COMMUTE = {
     "commuter": "Jane",
     "work": "Scale Computing, 360 Ritch St #300, San Francisco, CA 94107",
     "start_time": datetime(2018, 1, 8, 9),
-    "max_extra": 20,
-    "max_fare": 15,
-    "max_transit_steps": 2,
-    "max_total": 90,
-    "mode_maxes": {
-        "DRIVING": 0,
-        "BICYCLING": 30,
-        "TRANSIT": 90,
-        "WALKING": 30,
+    "max_limits": {
+        "fare": 15,
+        "time.DRIVING": 0,
+        "time.BICYCLING": 30,
+        "time.TRANSIT": 90,
+        "time.WALKING": 30,
+        "steps.TRANSIT": 2,
+        "total": 90,
+        "extra": 20,
     }
 }
 
@@ -115,21 +125,24 @@ PAIGE_COMMUTE = {
     "commuter": "Paige",
     "work": "DaVita, Golden Gate",
     "start_time": datetime(2018, 1, 8, 6),
-    "max_extra": 20,
-    "max_fare": 15,
-    "max_transit_steps": 2,
-    "max_total": 90,
-    "mode_maxes": {
-        "DRIVING": 20,
-        "BICYCLING": 30,
-        "TRANSIT": 90,
-        "WALKING": 30,
+    "max_limits": {
+        "fare": 15,
+        "time.DRIVING": 20,
+        "time.BICYCLING": 30,
+        "time.TRANSIT": 90,
+        "time.WALKING": 30,
+        "steps.TRANSIT": 2,
+        "total": 90,
+        "extra": 20,
     }
 }
 
-COMMUTERS = [JANE_COMMUTE, PAIGE_COMMUTE]
-COMMUTE_MODES = ['transit', 'bicycling', 'walking', 'driving']
-# COMMUTE_MODES = ['transit']
+if DEV_MODE:
+    COMMUTERS = [JANE_COMMUTE]
+    COMMUTE_MODES = ['transit']
+else:
+    COMMUTERS = [JANE_COMMUTE, PAIGE_COMMUTE]
+    COMMUTE_MODES = ['transit', 'bicycling', 'walking', 'driving']
 
 ## Search type preferences
 
