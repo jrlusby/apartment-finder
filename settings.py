@@ -1,6 +1,17 @@
 import os
+from datetime import datetime
+
+DEV_MODE = True
 
 ## Price
+
+FILTERS = {
+    'min_price': 1000,
+    'max_price': 2200,
+    'min_bedrooms': 1,
+    'cats_ok': 1,
+    'min_bathrooms': 1,
+}
 
 # The minimum rent you want to pay per month.
 MIN_PRICE = 1500
@@ -68,7 +79,11 @@ BOXES = {
     "presidio": [
         [37.77805, -122.43959],
         [37.78829, -122.47151],
-    ]
+    ],
+    "bay_area": [
+        [37.2025, -121.6406],
+        [38.1826, -122.8102],
+    ],
 }
 
 # A list of neighborhood names to look for in the Craigslist neighborhood name field. If a listing doesn't fall into
@@ -77,20 +92,29 @@ BOXES = {
 # but it also catches listings that don't have coordinates (many listings are missing this info).
 NEIGHBORHOODS = ["berkeley north", "berkeley", "rockridge", "adams point", "oakland lake merritt", "cow hollow", "piedmont", "pac hts", "pacific heights", "lower haight", "inner sunset", "outer sunset", "presidio", "palo alto", "richmond / seacliff", "haight ashbury", "alameda", "twin peaks", "noe valley", "bernal heights", "glen park", "sunset", "mission district", "potrero hill", "dogpatch"]
 
-## Transit preferences
+# ## Transit preferences
 
-# The farthest you want to live from a transit stop.
-MAX_TRANSIT_DIST = 2 # kilometers
-
-# Transit stations you want to check against.  Every coordinate here will be checked against each listing,
-# and the closest station name will be added to the result and posted into Slack.
-TRANSIT_STATIONS = {
-    "oakland_19th_bart": [37.8118051,-122.2720873],
-    "macarthur_bart": [37.8265657,-122.2686705],
-    "rockridge_bart": [37.841286,-122.2566329],
-    "downtown_berkeley_bart": [37.8629541,-122.276594],
-    "north_berkeley_bart": [37.8713411,-122.2849758]
+JANE_COMMUTE = {
+    "work": "Scale Computing, 360 Ritch St #300, San Francisco, CA 94107",
+    "start_time": datetime(2018, 1, 8, 9),
+    "max_extra": 10,
+    "max_fare": 15,
+    "max_transit_steps": 1,
+    "mode": "transit",
 }
+
+PAIGE_COMMUTE = {
+    "work": "DaVita, Golden Gate",
+    "start_time": datetime(2018, 1, 8, 6),
+    "max_extra": 20,
+    "max_fare": 15,
+    "max_transit_steps": 1,
+    # "mode": "driving",
+    "mode": "transit",
+}
+
+COMMUTERS = [JANE_COMMUTE, PAIGE_COMMUTE]
+COMMUTE_MODES = ['transit', 'bicycling', 'walking', 'driving']
 
 ## Search type preferences
 
