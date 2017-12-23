@@ -1,7 +1,7 @@
 import os
 from datetime import datetime
 
-DEV_MODE = False
+DEV_MODE = True
 
 ## Price
 

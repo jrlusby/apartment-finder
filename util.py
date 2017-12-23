@@ -119,6 +119,7 @@ def process_google(source_addr):
     # Request directions via public transit
     commutes = []
     found = {}
+    print "MAPPING:", source_addr
     for commute in settings.COMMUTERS:
         found[commute["commuter"]] = False
         for cmode in settings.COMMUTE_MODES:
