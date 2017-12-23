@@ -50,7 +50,7 @@ def scrape_area(area):
                              filters={'max_price': settings.MAX_PRICE, "min_price": settings.MIN_PRICE})
 
     results = []
-    gen = cl_h.get_results(sort_by='newest', geotagged=True, limit=1)
+    gen = cl_h.get_results(sort_by='newest', geotagged=True, limit=3)
     while True:
         try:
             result = next(gen)
@@ -76,6 +76,7 @@ def scrape_area(area):
                 # Annotate the result with information about the area it's in and points of interest near it.
                 geo_data = find_points_of_interest(result["geotag"], result["where"])
                 result.update(geo_data)
+                print result
             else:
                 result["area"] = ""
 
@@ -105,7 +106,7 @@ def scrape_area(area):
 
             # Return the result if it's near a bart station, or if it is in an area we defined.
             # TODO filter by google things
-            if len(result["area"]) > 0:
+            if len(result["area"]) > 0 and len(result['commute']) > 0:
                 results.append(result)
 
     return results

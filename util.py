@@ -71,6 +71,7 @@ def find_points_of_interest(geotag, location):
     """
     area_found = False
     area = ""
+    commutes = {}
     # Look to see if the listing is in any of the neighborhood boxes we
     # defined.
     for a, coords in settings.BOXES.items():
@@ -78,15 +79,17 @@ def find_points_of_interest(geotag, location):
             area = a
             area_found = True
 
-    # TODO add google maps location resolution
-    commutes = process_google(geotag)
-
     # If the listing isn't in any of the boxes we defined, check to see if the string description of the neighborhood
     # matches anything in our list of neighborhoods.
     if len(area) == 0:
         for hood in settings.NEIGHBORHOODS:
             if hood in location.lower():
                 area = hood
+
+    if len(area) > 0:
+        # TODO add google maps location resolution
+        commutes = process_google(geotag)
+        print commutes
 
     return {
         "area_found": area_found,
