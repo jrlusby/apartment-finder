@@ -141,9 +141,9 @@ def process_google(source_addr):
                 steps = step_breakdown.get("TRANSIT", 0)
                 travel_time, total, extra = route_time(route)
                 extra = travel_time.get("WALKING", 0) + extra
-                # print travel_time
-                # print step_breakdown
-                # print fare, total, extra, steps
+                print travel_time
+                print step_breakdown
+                print fare, total, extra, steps
                 commute_ok = True
                 for mode, max_t in commute["mode_maxes"].iteritems():
                     if mode in travel_time and travel_time[mode] > max_t:
