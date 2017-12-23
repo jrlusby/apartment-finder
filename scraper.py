@@ -56,7 +56,10 @@ def scrape_area(area):
         filters=settings.FILTERS)
 
     results = []
-    gen = cl_h.get_results(sort_by='newest', geotagged=True, limit=20)
+    gen = cl_h.get_results(
+        sort_by='newest',
+        geotagged=True,
+        limit=settings.LIMIT)
     while True:
         try:
             result = next(gen)
@@ -82,6 +85,7 @@ def scrape_area(area):
 
                 # Annotate the result with information about the area it's in
                 # and points of interest near it.
+                print result["name"], result["url"]
                 geo_data = find_points_of_interest(
                     result["geotag"], result["where"])
                 result.update(geo_data)

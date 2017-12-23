@@ -1,6 +1,13 @@
 import settings
 import math
 import googlemaps
+import pprint
+from pyshorteners import Shortener
+
+shortener = Shortener('Google', api_key=settings.SHORT_GURL_TOKEN)
+
+
+PP = pprint.PrettyPrinter(indent=4)
 
 
 def coord_distance(lat1, lon1, lat2, lon2):
@@ -45,7 +52,7 @@ def post_listing_to_slack(sc, listing):
             listing["area"],
             listing["price"],
             listing["name"],
-            listing["url"],
+            shortener.short(listing["url"]),
         )
         # options.append({"commuter": commute["commuter"],
         #                 "time": travel_time,
@@ -57,11 +64,12 @@ def post_listing_to_slack(sc, listing):
                 time_breakdown += "{0}:{1:.2f} ".format(commute_type, time)
             time_breakdown += "Extra:{:.2f}".format(commute['extra'])
 
-            desc += u"\n{0} | {1} steps | ${2} | {3}".format(
+            desc += u"\n{0} | {1} steps | ${2} | {3} | {4}".format(
                 commute["commuter"],
                 commute["steps"],
                 commute["fare"],
-                time_breakdown
+                time_breakdown,
+                commute["maps_url"],
             )
 
         if not settings.DEV_MODE:
@@ -83,15 +91,13 @@ def find_points_of_interest(geotag, location):
     the listing was posted.
     :return: A dictionary containing annotations.
     """
-    area_found = False
-    area = ""
+    area = "Unknown"
     commutes = {}
     # Look to see if the listing is in any of the neighborhood boxes we
     # defined.
     for a, coords in settings.BOXES.items():
         if in_box(geotag, coords):
             area = a
-            area_found = True
 
     # If the listing isn't in any of the boxes we defined, check to see if the string description of the neighborhood
     # matches anything in our list of neighborhoods.
@@ -100,12 +106,10 @@ def find_points_of_interest(geotag, location):
             if hood in location.lower():
                 area = hood
 
-    if len(area) > 0:
-        # TODO add google maps location resolution
-        commutes = process_google(geotag)
+    commutes = process_google(geotag)
 
     return {
-        "area_found": area_found,
+        "area_found": len(commutes) > 0,
         "area": area,
         "commute": commutes,
     }
@@ -119,59 +123,79 @@ def process_google(source_addr):
     # Request directions via public transit
     commutes = []
     found = {}
-    print "MAPPING:", source_addr
     for commute in settings.COMMUTERS:
+
+        print commute["work"]
         found[commute["commuter"]] = False
+
         for cmode in settings.COMMUTE_MODES:
-            if commute["mode_maxes"][cmode.upper()] == 0:
+
+            if commute["max_limits"]["time." + cmode.upper()] == 0:
                 # dont waste a query on something we will immediately throw out
                 continue
-            print commute["work"], cmode
+
             directions_result = GMAPS.directions(
                 source_addr,
                 commute["work"],
                 mode=cmode,
-                alternatives=True,
+                alternatives=settings.ALTERNATES,
+                transit_routing_preference="fewer_transfers",
                 arrival_time=commute["start_time"])
-            options = []
-            # PP.pprint(directions_result)
-            for route in directions_result:
-                fare = route_cost(route)
-                steps = 1
-                step_breakdown = route_steps(route)
-                steps = step_breakdown.get("TRANSIT", 0)
-                travel_time, total, extra = route_time(route)
-                extra = travel_time.get("WALKING", 0) + extra
-                print travel_time
-                print step_breakdown
-                print fare, total, extra, steps
-                commute_ok = True
-                for mode, max_t in commute["mode_maxes"].iteritems():
-                    if mode in travel_time and travel_time[mode] > max_t:
-                        commute_ok = False
-                if (commute_ok and extra <= commute["max_extra"] and
-                        fare <= commute["max_fare"] and
-                        steps <= commute["max_transit_steps"] and
-                        total <= commute["max_total"]):
-                    options.append({"commuter": commute["commuter"],
-                                    "time": travel_time,
-                                    "total": total,
-                                    "extra": extra,
-                                    "fare": fare,
-                                    "steps": step_breakdown})
-                    found[commute["commuter"]] = True
 
-            options.sort(key=lambda option: option["fare"])
+            options = []
+            for route in directions_result:
+                origin = route["legs"][0]["start_location"]
+                destination = route["legs"][-1]["end_location"]
+                maps_url = get_gmaps_directions_url(origin, destination, cmode)
+
+                travel_time, total, extra = route_time(route)
+                option = {
+                    "commuter": commute["commuter"],
+                    "time": travel_time,
+                    "total": total,
+                    "extra": extra,
+                    "fare": route_cost(route),
+                    "steps": route_steps(route),
+                    "maps_url": maps_url,
+                }
+                print option
+
+                evaluation = check_against_limits(
+                    option, commute["max_limits"])
+                for key, val in evaluation.iteritems():
+                    if not val:
+                        print "FAIL: {} > {}".format(key, commute["max_limits"][key])
+
+                if False not in evaluation.values():
+                    options.append(option)
+                    found[commute["commuter"]] = True
+                else:
+                    PP.pprint(directions_result)
 
             if options:
+                options.sort(key=lambda option: option["fare"])
                 commutes.append(options[0])
 
-    print commutes
-    print found
-    print found.items()
+    print
     if False in found.values():
         commutes = []
     return commutes
+
+
+def check_against_limits(option, limits, leader=""):
+    vals = {}
+    for key, value in option.iteritems():
+        if isinstance(value, dict):
+            vals.update(
+                check_against_limits(
+                    value,
+                    limits,
+                    leader +
+                    key +
+                    "."))
+        elif leader + key in limits:
+            vals[leader + key] = value <= limits[leader + key]
+    return vals
 
 
 def route_steps(route):
@@ -221,4 +245,16 @@ def route_time(route):
 
     for key in travel_time:
         travel_time[key] /= 60.0
-    return travel_time, total_time/60.0, extra_time/60.0
+    return travel_time, total_time / 60.0, extra_time / 60.0
+
+
+def get_gmaps_directions_url(origin_location, destination_location, mode):
+    url = "https://www.google.com/maps/dir/?api=1"
+    url += "&origin={},{}".format(
+        origin_location["lat"],
+        origin_location["lng"])
+    url += "&destination={},{}".format(
+        destination_location["lat"],
+        destination_location["lng"])
+    url += "&travelmode={}".format(mode)
+    return shortener.short(url)
