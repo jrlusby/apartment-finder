@@ -145,7 +145,7 @@ CRAIGSLIST_HOUSING_SECTION = 'apa'
 # How long we should sleep between scrapes of Craigslist.
 # Too fast may get rate limited.
 # Too slow may miss listings.
-SLEEP_INTERVAL = 1 * 60 # seconds
+SLEEP_INTERVAL = 20 # seconds
 
 # Which slack channel to post the listings into.
 SLACK_CHANNEL = "#housing"

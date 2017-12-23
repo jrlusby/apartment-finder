@@ -60,7 +60,6 @@ def scrape_area(area):
     while True:
         try:
             result = next(gen)
-            print result
         except StopIteration:
             break
         except Exception:
@@ -86,7 +85,6 @@ def scrape_area(area):
                 geo_data = find_points_of_interest(
                     result["geotag"], result["where"])
                 result.update(geo_data)
-                print result
             else:
                 result["area"] = ""
 
