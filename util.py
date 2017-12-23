@@ -131,7 +131,7 @@ def process_google(source_addr):
                 source_addr,
                 commute["work"],
                 mode=cmode,
-                alternatives=False,
+                alternatives=True,
                 arrival_time=commute["start_time"])
             options = []
             # PP.pprint(directions_result)
