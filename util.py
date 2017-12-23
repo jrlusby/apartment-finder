@@ -97,7 +97,9 @@ def find_points_of_interest(geotag, location):
         "commute": commutes,
     }
 
+
 GMAPS = googlemaps.Client(settings.MAPS_TOKEN)
+
 
 def process_google(source_addr):
     """Look things up on google's apis."""
@@ -105,11 +107,12 @@ def process_google(source_addr):
     commutes = []
     for commute in settings.COMMUTERS:
         for cmode in settings.COMMUTE_MODES:
-            directions_result = GMAPS.directions(source_addr,
-                                                 commute["work"],
-                                                 mode=cmode,
-                                                 alternatives=False,
-                                                 arrival_time=commute["start_time"])
+            directions_result = GMAPS.directions(
+                source_addr,
+                commute["work"],
+                mode=cmode,
+                alternatives=False,
+                arrival_time=commute["start_time"])
             options = []
             # PP.pprint(directions_result)
             for route in directions_result:
