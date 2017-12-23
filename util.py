@@ -47,8 +47,22 @@ def post_listing_to_slack(sc, listing):
             listing["name"],
             listing["url"],
         )
+        # options.append({"commuter": commute["commuter"],
+        #                 "time": travel_time,
+        #                 "fare": fare,
+        #                 "steps": step_breakdown})
         for commute in listing["commute"]:
-            desc += u"\n{0}".format(commute)
+            time_breakdown = "Total:{:.2f} ".format(commute['total'])
+            for commute_type, time in commute["time"].iteritems():
+                time_breakdown += "{0}:{1:.2f} ".format(commute_type, time)
+            time_breakdown += "Extra:{:.2f}".format(commute['extra'])
+
+            desc += u"\n{0} | {1} steps | ${2} | {3}".format(
+                commute["commuter"],
+                commute["steps"],
+                commute["fare"],
+                time_breakdown
+            )
 
         if not settings.DEV_MODE:
             sc.api_call(
@@ -89,7 +103,7 @@ def find_points_of_interest(geotag, location):
     if len(area) > 0:
         # TODO add google maps location resolution
         commutes = process_google(geotag)
-        print commutes
+        print "GOTCHYA", commutes
 
     return {
         "area_found": area_found,
@@ -107,6 +121,7 @@ def process_google(source_addr):
     commutes = []
     for commute in settings.COMMUTERS:
         for cmode in settings.COMMUTE_MODES:
+            print commute["work"], cmode
             directions_result = GMAPS.directions(
                 source_addr,
                 commute["work"],
@@ -120,23 +135,28 @@ def process_google(source_addr):
                 steps = 1
                 step_breakdown = route_steps(route)
                 steps = step_breakdown.get("TRANSIT", 0)
-                travel_time = route_time(route)
-                extra = travel_time.get("WALKING", 0) + travel_time["extra"]
+                travel_time, total, extra = route_time(route)
+                extra = travel_time.get("WALKING", 0) + extra
                 # print travel_time
                 # print step_breakdown
                 # print fare, total, extra, steps
-                if (extra <= commute["max_extra"] and
-                        fare <= commute["max_fare"] and
-                        steps <= commute["max_transit_steps"]):
-                    options.append({"time": travel_time,
-                                    "fare": fare,
-                                    "steps": step_breakdown})
+                # if (extra <= commute["max_extra"] and
+                #         fare <= commute["max_fare"] and
+                #         steps <= commute["max_transit_steps"]):
+                options.append({"commuter": commute["commuter"],
+                                "time": travel_time,
+                                "total": total,
+                                "extra": extra,
+                                "fare": fare,
+                                "steps": step_breakdown})
 
             options.sort(key=lambda option: option["fare"])
+            print options
 
             if options:
                 commutes.append(options[0])
 
+    print commutes
     return commutes
 
 
@@ -185,8 +205,6 @@ def route_time(route):
                     travel_time[mode] = 0
                 travel_time[mode] += step_time
 
-    travel_time["extra"] = extra_time
-    travel_time["total"] = total_time
     for key in travel_time:
         travel_time[key] /= 60.0
-    return travel_time
+    return travel_time, total_time/60.0, extra_time/60.0

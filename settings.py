@@ -96,22 +96,21 @@ NEIGHBORHOODS = ["berkeley north", "berkeley", "rockridge", "adams point", "oakl
 # ## Transit preferences
 
 JANE_COMMUTE = {
+    "commuter": "Jane",
     "work": "Scale Computing, 360 Ritch St #300, San Francisco, CA 94107",
     "start_time": datetime(2018, 1, 8, 9),
-    "max_extra": 10,
+    "max_extra": 20,
     "max_fare": 15,
     "max_transit_steps": 1,
-    "mode": "transit",
 }
 
 PAIGE_COMMUTE = {
+    "commuter": "Paige",
     "work": "DaVita, Golden Gate",
     "start_time": datetime(2018, 1, 8, 6),
     "max_extra": 20,
     "max_fare": 15,
     "max_transit_steps": 1,
-    # "mode": "driving",
-    "mode": "transit",
 }
 
 COMMUTERS = [JANE_COMMUTE, PAIGE_COMMUTE]
