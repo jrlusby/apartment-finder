@@ -11,6 +11,7 @@ FILTERS = {
     'min_bedrooms': 1,
     'cats_ok': 1,
     'min_bathrooms': 1,
+    'min_ft2': 450,
 }
 
 # The minimum rent you want to pay per month.
