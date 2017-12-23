@@ -103,7 +103,6 @@ def find_points_of_interest(geotag, location):
     if len(area) > 0:
         # TODO add google maps location resolution
         commutes = process_google(geotag)
-        print "GOTCHYA", commutes
 
     return {
         "area_found": area_found,
@@ -119,7 +118,9 @@ def process_google(source_addr):
     """Look things up on google's apis."""
     # Request directions via public transit
     commutes = []
+    found = {}
     for commute in settings.COMMUTERS:
+        found[commute["commuter"]] = False
         for cmode in settings.COMMUTE_MODES:
             print commute["work"], cmode
             directions_result = GMAPS.directions(
@@ -140,23 +141,28 @@ def process_google(source_addr):
                 # print travel_time
                 # print step_breakdown
                 # print fare, total, extra, steps
-                # if (extra <= commute["max_extra"] and
-                #         fare <= commute["max_fare"] and
-                #         steps <= commute["max_transit_steps"]):
-                options.append({"commuter": commute["commuter"],
-                                "time": travel_time,
-                                "total": total,
-                                "extra": extra,
-                                "fare": fare,
-                                "steps": step_breakdown})
+                if (extra <= commute["max_extra"] and
+                        fare <= commute["max_fare"] and
+                        steps <= commute["max_transit_steps"] and
+                        total <= commute["max_total"]):
+                    options.append({"commuter": commute["commuter"],
+                                    "time": travel_time,
+                                    "total": total,
+                                    "extra": extra,
+                                    "fare": fare,
+                                    "steps": step_breakdown})
+                    found[commute["commuter"]] = True
 
             options.sort(key=lambda option: option["fare"])
-            print options
 
             if options:
                 commutes.append(options[0])
 
     print commutes
+    print found
+    print found.items()
+    if False in found.values():
+        commutes = []
     return commutes
 
 
