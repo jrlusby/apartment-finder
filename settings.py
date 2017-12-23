@@ -101,7 +101,7 @@ JANE_COMMUTE = {
     "start_time": datetime(2018, 1, 8, 9),
     "max_extra": 20,
     "max_fare": 15,
-    "max_transit_steps": 1,
+    "max_transit_steps": 2,
     "max_total": 90,
     "mode_maxes": {
         "DRIVING": 0,
@@ -117,7 +117,7 @@ PAIGE_COMMUTE = {
     "start_time": datetime(2018, 1, 8, 6),
     "max_extra": 20,
     "max_fare": 15,
-    "max_transit_steps": 1,
+    "max_transit_steps": 2,
     "max_total": 90,
     "mode_maxes": {
         "DRIVING": 20,

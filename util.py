@@ -122,6 +122,9 @@ def process_google(source_addr):
     for commute in settings.COMMUTERS:
         found[commute["commuter"]] = False
         for cmode in settings.COMMUTE_MODES:
+            if commute["mode_maxes"][cmode.upper()] == 0:
+                # dont waste a query on something we will immediately throw out
+                continue
             print commute["work"], cmode
             directions_result = GMAPS.directions(
                 source_addr,
