@@ -85,7 +85,10 @@ def scrape_area(area):
 
                 # Annotate the result with information about the area it's in
                 # and points of interest near it.
-                print result["name"], result["url"]
+                try:
+                    print result["name"], result["url"]
+                except (UnicodeEncodeError, UnicodeDecodeError) as exc:
+                    print "ERROR: {}".format(exc)
                 geo_data = find_points_of_interest(
                     result["geotag"], result["where"])
                 result.update(geo_data)

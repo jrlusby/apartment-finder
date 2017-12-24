@@ -7,7 +7,7 @@ if DEV_MODE:
     LIMIT = 5
     ALTERNATES=False
 else:
-    LIMIT = 20
+    LIMIT = 10
     ALTERNATES=True
 
 
@@ -41,7 +41,7 @@ CRAIGSLIST_SITE = 'sfbay'
 if DEV_MODE:
     AREAS = ["sfc"]
 else:
-    AREAS = ["eby", "sfc", "sby", "nby"]
+    AREAS = ["pen", "eby", "sfc", "sby", "nby", "scz"]
 
 # A list of neighborhoods and coordinates that you want to look for apartments in.  Any listing that has coordinates
 # attached will be checked to see which area it is in.  If there's a match, it will be annotated with the area
@@ -115,8 +115,8 @@ JANE_COMMUTE = {
         "time.DRIVING": 0,
         "time.BICYCLING": 30,
         "time.TRANSIT": 90,
-        "time.WALKING": 30,
-        "steps.TRANSIT": 2,
+        "time.WALKING": 15,
+        "steps.TRANSIT": 3,
         "total": 90,
         "extra": 20,
     }
@@ -131,8 +131,8 @@ PAIGE_COMMUTE = {
         "time.DRIVING": 20,
         "time.BICYCLING": 30,
         "time.TRANSIT": 90,
-        "time.WALKING": 30,
-        "steps.TRANSIT": 2,
+        "time.WALKING": 15,
+        "steps.TRANSIT": 3,
         "total": 90,
         "extra": 20,
     }

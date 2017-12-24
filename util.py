@@ -69,7 +69,7 @@ def post_listing_to_slack(sc, listing):
                 commute["steps"],
                 commute["fare"],
                 time_breakdown,
-                commute["maps_url"],
+                shortener.short(commute["maps_url"]),
             )
 
         if not settings.DEV_MODE:
@@ -138,7 +138,7 @@ def process_google(source_addr):
                 source_addr,
                 commute["work"],
                 mode=cmode,
-                alternatives=settings.ALTERNATES,
+                alternatives=(settings.ALTERNATES and cmode == "transit"),
                 transit_routing_preference="fewer_transfers",
                 arrival_time=commute["start_time"])
 
@@ -169,8 +169,8 @@ def process_google(source_addr):
                 if False not in evaluation.values():
                     options.append(option)
                     found[commute["commuter"]] = True
-                else:
-                    PP.pprint(directions_result)
+                # else:
+                #     PP.pprint(directions_result)
 
             if options:
                 options.sort(key=lambda option: option["fare"])
@@ -257,4 +257,4 @@ def get_gmaps_directions_url(origin_location, destination_location, mode):
         destination_location["lat"],
         destination_location["lng"])
     url += "&travelmode={}".format(mode)
-    return shortener.short(url)
+    return url
